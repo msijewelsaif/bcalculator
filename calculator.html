@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator with Aligned Screen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 2px;
+        }
+        .calculator {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: borderAnimation 2s infinite alternate;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                "screen"
+                "keypad";
+        }
+        @keyframes borderAnimation {
+            0% {
+                border: 2px solid #3498db;
+            }
+            100% {
+                border: 2px solid #e74c3c;
+            }
+        }
+
+        @keyframes calculator-screen {
+            0% {
+                border: 2px solid #3498db;
+            }
+            100% {
+                border: 2px solid #e74c3c;
+            }
+        }
+        .calculator-screen {
+            grid-area: screen;
+            width: 94%;
+            height: 80px;
+            text-align: right;
+            font-size: 2rem;
+            padding: 0.5rem;
+            border: 1px;
+           
+        }
+        .calculator-keys {
+            grid-area: keypad;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 1rem;
+        }
+        .calculator-key {
+            font-size: 1.5rem;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .calculator-key:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="calculator-screen" id="result" readonly>
+        <div class="calculator-keys">
+            <button class="calculator-key" onclick="appendToResult('7')">7</button>
+            <button class="calculator-key" onclick="appendToResult('8')">8</button>
+            <button class="calculator-key" onclick="appendToResult('9')">9</button>
+            <button class="calculator-key" onclick="appendToResult('+')">+</button>
+            <button class="calculator-key" onclick="appendToResult('4')">4</button>
+            <button class="calculator-key" onclick="appendToResult('5')">5</button>
+            <button class="calculator-key" onclick="appendToResult('6')">6</button>
+            <button class="calculator-key" onclick="appendToResult('-')">-</button>
+            <button class="calculator-key" onclick="appendToResult('1')">1</button>
+            <button class="calculator-key" onclick="appendToResult('2')">2</button>
+            <button class="calculator-key" onclick="appendToResult('3')">3</button>
+            <button class="calculator-key" onclick="appendToResult('*')">*</button>
+            <button class="calculator-key" onclick="appendToResult('0')">0</button>
+            <button class="calculator-key" onclick="clearResult()">C</button>
+            <button class="calculator-key" onclick="appendToResult('/')">/</button>
+            <button class="calculator-key" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+    <script>
+        function appendToResult(value) {
+            document.getElementById('result').value += value;
+        }
+
+        function clearResult() {
+            document.getElementById('result').value = '';
+        }
+
+        function calculateResult() {
+            try {
+                const result = eval(document.getElementById('result').value);
+                document.getElementById('result').value = result;
+            } catch (error) {
+                document.getElementById('result').value = 'Error';
+            }
+        }
+    </script>
+</body>
+</html>
