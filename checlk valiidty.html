@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concurrent Validity Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    table {
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    input[type="number"] {
+        width: 60px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+</style>
+</head>
+<body>
+
+<h2>Concurrent Validity Calculator</h2>
+
+<label for="row-number">Number of Rows:</label>
+<input type="number" id="row-number" min="1" value="2">
+<button onclick="createTable()">Create Table</button>
+
+<div id="table-container"></div>
+
+<button onclick="calculate()">Calculate</button>
+
+<div id="result"></div>
+
+<script>
+function createTable() {
+    var rowNumber = document.getElementById('row-number').value;
+    var tableHTML = '<table id="data-table"><thead><tr><th>Measure 1</th><th>Measure 2</th></tr></thead><tbody>';
+
+    for (var i = 0; i < rowNumber; i++) {
+        tableHTML += '<tr><td><input type="number" class="measure1"></td><td><input type="number" class="measure2"></td></tr>';
+    }
+
+    tableHTML += '</tbody></table>';
+
+    document.getElementById('table-container').innerHTML = tableHTML;
+}
+
+function calculate() {
+    var measure1Values = [];
+    var measure2Values = [];
+    
+    var rows = document.querySelectorAll('#data-table tbody tr');
+    rows.forEach(function(row) {
+        var measure1 = parseFloat(row.querySelector('.measure1').value);
+        var measure2 = parseFloat(row.querySelector('.measure2').value);
+        
+        if (!isNaN(measure1) && !isNaN(measure2)) {
+            measure1Values.push(measure1);
+            measure2Values.push(measure2);
+        }
+    });
+
+    if (measure1Values.length < 2 || measure2Values.length < 2) {
+        alert("Please enter at least two data points for each measure.");
+        return;
+    }
+
+    // Calculate Pearson correlation coefficient
+    var pearsonCorrelation = getPearsonCorrelation(measure1Values, measure2Values);
+
+    // Calculate Spearman correlation coefficient
+    var spearmanCorrelation = getSpearmanCorrelation(measure1Values, measure2Values);
+
+    document.getElementById('result').innerHTML = "<p>Pearson Correlation Coefficient: " + pearsonCorrelation + "</p>" +
+                                                    "<p>Spearman Correlation Coefficient: " + spearmanCorrelation + "</p>";
+}
+
+function getPearsonCorrelation(x, y) {
+    var n = x.length;
+    var sumX = x.reduce((a, b) => a + b, 0);
+    var sumY = y.reduce((a, b) => a + b, 0);
+    var sumXY = x.map((a, i) => a * y[i]).reduce((a, b) => a + b, 0);
+    var sumXSquared = x.map(a => a * a).reduce((a, b) => a + b, 0);
+    var sumYSquared = y.map(a => a * a).reduce((a, b) => a + b, 0);
+
+    var pearsonNumerator = (n * sumXY) - (sumX * sumY);
+    var pearsonDenominator = Math.sqrt((n * sumXSquared - Math.pow(sumX, 2)) * (n * sumYSquared - Math.pow(sumY, 2)));
+
+    return pearsonNumerator / pearsonDenominator;
+}
+
+function getSpearmanCorrelation(x, y) {
+    var n = x.length;
+
+    var xRank = getRank(x);
+    var yRank = getRank(y);
+
+    var dSquared = xRank.map((xVal, i) => Math.pow(xVal - yRank[i], 2)).reduce((a, b) => a + b, 0);
+
+    var spearmanCorrelation = 1 - ((6 * dSquared) / (n * (Math.pow(n, 2) - 1)));
+
+    return spearmanCorrelation;
+}
+
+function getRank(arr) {
+    var sortedArr = arr.slice().sort((a, b) => a - b);
+    var ranks = arr.map(a => sortedArr.indexOf(a) + 1);
+    return ranks;
+}
+</script>
+
+</body>
+</html>
